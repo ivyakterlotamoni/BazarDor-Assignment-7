@@ -428,15 +428,9 @@ export default function Home() {
       <header className="site-header">
         <div className="header-main">
           <Link href="/" className="brand">
-            <span className="brand-icon">
-              <Image
-                src="/logo-icon.png"
-                alt="বাজার দর লোগো"
-                width={44}
-                height={44}
-                priority
-              />
-            </span>
+            <div className="bg-green-700 flex h-10 w-10 items-center justify-center rounded-lg">
+  <span className="text-2xl">🛒</span>
+</div>
 
             <span>
               <strong>বাজার দর</strong>
