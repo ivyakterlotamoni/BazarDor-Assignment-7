@@ -42,4 +42,5 @@ BazarDor is a responsive web application that helps users explore daily market p
 
 ## Project Repository
 
-https://github.com/ivyakterlotamoni/assignment-7
+
+https://github.com/ivyakterlotamoni/BazarDor-Assignment-7
