@@ -1,9 +1,8 @@
-
 "use client";
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 
 type Product = {
   id: number | string;
@@ -21,8 +20,7 @@ type Product = {
   };
 };
 
-const API =
-  "https://openapi.programming-hero.com/api/bazardor";
+const API = "https://openapi.programming-hero.com/api/bazardor";
 
 const categories: Record<string, string> = {
   chal: "চাল",
@@ -40,16 +38,13 @@ function getProducts(json: unknown): Product[] {
 
   if (json && typeof json === "object") {
     const obj = json as Record<string, unknown>;
-
-    if (Array.isArray(obj.data)) {
-      return obj.data as Product[];
-    }
+    if (Array.isArray(obj.data)) return obj.data as Product[];
   }
 
   return [];
 }
 
-export default function CategoryPage() {
+function CategoryContent() {
   const params = useParams();
   const slug = String(params.slug ?? "");
 
@@ -76,7 +71,7 @@ export default function CategoryPage() {
         );
 
         if (!response.ok) {
-          throw new Error("পণ্যের তথ্য আনা যায়নি।");
+          throw new Error("FETCH_FAILED");
         }
 
         const json: unknown = await response.json();
@@ -86,8 +81,7 @@ export default function CategoryPage() {
       } catch (err) {
         if (active) {
           setError(
-            err instanceof Error &&
-              err.message === "INVALID_CATEGORY"
+            err instanceof Error && err.message === "INVALID_CATEGORY"
               ? "এই ক্যাটাগরিটি পাওয়া যায়নি।"
               : "পণ্য লোড হয়নি। আবার চেষ্টা করো।"
           );
@@ -105,36 +99,23 @@ export default function CategoryPage() {
   }, [slug]);
 
   const sorted = [...products].sort((a, b) => {
-    if (sort === "asc") {
-      return Number(a.today ?? 0) - Number(b.today ?? 0);
-    }
-
-    if (sort === "desc") {
-      return Number(b.today ?? 0) - Number(a.today ?? 0);
-    }
-
+    if (sort === "asc") return Number(a.today ?? 0) - Number(b.today ?? 0);
+    if (sort === "desc") return Number(b.today ?? 0) - Number(a.today ?? 0);
     return 0;
   });
 
   return (
     <main className="min-h-screen bg-[#f5f7f3] px-4 py-8 sm:px-8">
       <div className="mx-auto max-w-7xl">
-        <Link
-          href="/"
-          className="mb-6 inline-block font-semibold text-green-800"
-        >
+        <Link href="/" className="mb-6 inline-block font-semibold text-green-800">
           ← হোম পেজে ফিরে যাও
         </Link>
 
         <div className="mb-7 rounded-2xl bg-white p-6 shadow-sm sm:p-8">
-          <p className="mb-2 text-sm text-gray-500">
-            বাজার দর / ক্যাটাগরি
-          </p>
-
+          <p className="mb-2 text-sm text-gray-500">বাজার দর / ক্যাটাগরি</p>
           <h1 className="text-3xl font-extrabold text-gray-900">
             {categories[slug] ?? "ক্যাটাগরি পাওয়া যায়নি"}
           </h1>
-
           <p className="mt-2 text-gray-600">
             এই ক্যাটাগরির পণ্যের বর্তমান বাজারদর দেখো।
           </p>
@@ -142,10 +123,7 @@ export default function CategoryPage() {
 
         {!loading && !error && products.length > 0 && (
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-            <p className="text-gray-600">
-              মোট {products.length}টি পণ্য
-            </p>
-
+            <p className="text-gray-600">মোট {products.length}টি পণ্য</p>
             <select
               value={sort}
               onChange={(e) => setSort(e.target.value)}
@@ -162,10 +140,7 @@ export default function CategoryPage() {
         {loading ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {[1, 2, 3, 4, 5, 6].map((item) => (
-              <div
-                key={item}
-                className="h-36 animate-pulse rounded-2xl bg-white p-5 shadow-sm"
-              >
+              <div key={item} className="h-36 animate-pulse rounded-2xl bg-white p-5 shadow-sm">
                 <div className="mb-4 h-5 w-2/3 rounded bg-gray-200" />
                 <div className="h-4 w-1/3 rounded bg-gray-200" />
               </div>
@@ -174,22 +149,14 @@ export default function CategoryPage() {
         ) : error ? (
           <div className="rounded-2xl bg-white p-8 text-center">
             <p className="text-red-600">{error}</p>
-            <Link
-              href="/"
-              className="mt-4 inline-block rounded-lg bg-green-800 px-5 py-3 font-bold text-white"
-            >
+            <Link href="/" className="mt-4 inline-block rounded-lg bg-green-800 px-5 py-3 font-bold text-white">
               হোম পেজে যাও
             </Link>
           </div>
         ) : products.length === 0 ? (
           <div className="rounded-2xl bg-white p-8 text-center">
-            <p className="text-gray-600">
-              এই ক্যাটাগরিতে কোনো পণ্য পাওয়া যায়নি।
-            </p>
-            <Link
-              href="/"
-              className="mt-4 inline-block font-bold text-green-800"
-            >
+            <p className="text-gray-600">এই ক্যাটাগরিতে কোনো পণ্য পাওয়া যায়নি।</p>
+            <Link href="/" className="mt-4 inline-block font-bold text-green-800">
               অন্য পণ্য দেখো →
             </Link>
           </div>
@@ -209,39 +176,22 @@ export default function CategoryPage() {
                     <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-green-50 text-4xl">
                       {product.image || product.categoryIcon || "🛒"}
                     </div>
-
                     <div>
-                      <h2 className="text-lg font-bold text-gray-900">
-                        {product.nameBn}
-                      </h2>
-                      <p className="mt-1 text-sm text-gray-500">
-                        {product.unit || "একক উল্লেখ নেই"}
-                      </p>
+                      <h2 className="text-lg font-bold text-gray-900">{product.nameBn}</h2>
+                      <p className="mt-1 text-sm text-gray-500">{product.unit || "একক উল্লেখ নেই"}</p>
                     </div>
                   </div>
 
                   <div className="mt-5 flex items-end justify-between gap-3">
                     <div>
-                      <p className="text-sm text-gray-500">
-                        আজকের দাম
-                      </p>
+                      <p className="text-sm text-gray-500">আজকের দাম</p>
                       <p className="mt-1 text-xl font-extrabold text-green-800">
-                        {product.today != null
-                          ? `${product.today} টাকা`
-                          : "দাম নেই"}
+                        {product.today != null ? `${product.today} টাকা` : "দাম নেই"}
                       </p>
                     </div>
-
                     {change !== 0 && (
-                      <span
-                        className={`rounded-full px-3 py-1 text-sm font-bold ${
-                          change > 0
-                            ? "bg-red-50 text-red-600"
-                            : "bg-green-50 text-green-700"
-                        }`}
-                      >
-                        {change > 0 ? "▲" : "▼"}{" "}
-                        {Math.abs(change)}%
+                      <span className={`rounded-full px-3 py-1 text-sm font-bold ${change > 0 ? "bg-red-50 text-red-600" : "bg-green-50 text-green-700"}`}>
+                        {change > 0 ? "▲" : "▼"} {Math.abs(change)}%
                       </span>
                     )}
                   </div>
@@ -256,5 +206,21 @@ export default function CategoryPage() {
         )}
       </div>
     </main>
+  );
+}
+
+export default function CategoryPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen bg-[#f5f7f3] px-4 py-8">
+          <div className="mx-auto max-w-7xl animate-pulse rounded-2xl bg-white p-8">
+            পেজ লোড হচ্ছে...
+          </div>
+        </main>
+      }
+    >
+      <CategoryContent />
+    </Suspense>
   );
 }

@@ -403,13 +403,21 @@ export default function Home() {
     return list;
   }, [products, sort]);
 
-  const today = new Intl.DateTimeFormat("bn-BD", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    timeZone: "Asia/Dhaka",
-  }).format(new Date());
+ 
+  const [today, setToday] = useState("");
+
+  useEffect(() => {
+    setToday(
+      new Intl.DateTimeFormat("bn-BD", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+        timeZone: "Asia/Dhaka",
+      }).format(new Date())
+    );
+  }, []);
+
 
   const tickerProducts = products.length
     ? [...products, ...products]
